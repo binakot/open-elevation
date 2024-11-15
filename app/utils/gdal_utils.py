@@ -1,14 +1,16 @@
+import json
 import os
-from osgeo import gdal, osr
 from lazy import lazy
 from os import listdir
 from os.path import isfile, join, getsize
-import json
+from osgeo import gdal, osr
 from rtree import index
+
 
 # Originally based on https://stackoverflow.com/questions/13439357/extract-point-from-raster-in-gdal
 class GDALInterface(object):
     SEA_LEVEL = 0
+
     def __init__(self, tif_path):
         super(GDALInterface, self).__init__()
         self.tif_path = tif_path
@@ -44,8 +46,6 @@ class GDALInterface(object):
         self.geo_transform_inv = (gt[0], gt[5] / dev, -gt[2] / dev,
                                   gt[3], -gt[4] / dev, gt[1] / dev)
 
-
-
     @lazy
     def points_array(self):
         b = self.src.GetRasterBand(1)
@@ -53,7 +53,6 @@ class GDALInterface(object):
 
     def print_statistics(self):
         print(self.src.GetRasterBand(1).GetStatistics(True, True))
-
 
     def lookup(self, lat, lon):
         try:
@@ -84,6 +83,7 @@ class GDALInterface(object):
 
     def __exit__(self, type, value, traceback):
         self.close()
+
 
 class GDALTileInterface(object):
     def __init__(self, tiles_folder, summary_file, open_interfaces_size=5):
@@ -127,8 +127,8 @@ class GDALTileInterface(object):
     def create_summary_json(self):
         all_coords = []
         for file in self._all_files():
-            full_path = join(self.tiles_folder,file)
-            print('Processing %s ... (%s MB)' % (full_path, getsize(full_path) / 2**20))
+            full_path = join(self.tiles_folder, file)
+            print('Processing %s ... (%s MB)' % (full_path, getsize(full_path) / 2 ** 20))
             i = self._open_gdal_interface(full_path)
             coords = i.get_corner_coords()
 
@@ -137,12 +137,12 @@ class GDALTileInterface(object):
             all_coords += [
                 {
                     'file': full_path,
-                    'coords': ( lmin,  # latitude min
-                                lmax,  # latitude max
-                                lngmin,  # longitude min
-                                lngmax,  # longitude max
+                    'coords': (lmin,  # latitude min
+                               lmax,  # latitude max
+                               lngmin,  # longitude min
+                               lngmax,  # longitude max
 
-                                )
+                               )
                 }
             ]
             print('\tDone! LAT (%s,%s) | LNG (%s,%s)' % (lmin, lmax, lngmin, lngmax))
@@ -177,4 +177,4 @@ class GDALTileInterface(object):
         for e in self.all_coords:
             e['index_id'] = index_id
             left, bottom, right, top = (e['coords'][0], e['coords'][2], e['coords'][1], e['coords'][3])
-            self.index.insert( index_id, (left, bottom, right, top), obj=e)
+            self.index.insert(index_id, (left, bottom, right, top), obj=e)

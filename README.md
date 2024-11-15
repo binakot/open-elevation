@@ -21,3 +21,13 @@ Please consider donating to keep the public API alive. This API is **used by mil
 You can donate [by following this link](https://www.open-elevation.com/#donate).
 
 
+---
+
+```bash
+$ ./scripts/create-dataset.sh
+```
+
+```bash
+$ docker build --progress=plain --no-cache -t binakot/open-elevation .
+$ docker run --name open-elevation -p 8080:8080 binakot/open-elevation
+```
