@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-set -e
+set -eu
 
 CUR_DIR=$(pwd)
 

@@ -1,19 +1,16 @@
 #!/usr/bin/env bash
-# Original Source: https://github.com/mapbox/gdal-polygonize-test
 set -eu
 
 raster=$1
 xtiles=$2
 ytiles=$3
 
-# get raster bounds
 ul=($(gdalinfo $raster | grep '^Upper Left' | sed -e 's/[a-zA-Z ]*(//' -e 's/).*//' -e 's/,/ /'))
 lr=($(gdalinfo $raster | grep '^Lower Right' | sed -e 's/[a-zA-Z ]*(//' -e 's/).*//' -e 's/,/ /'))
 
 xmin=${ul[0]}
 xsize=$(echo "${lr[0]} - $xmin" | bc)
 ysize=$(echo "${ul[1]} - ${lr[1]}" | bc)
-
 xdif=$(echo "$xsize/$xtiles" | bc -l)
 
 for x in $(eval echo {0..$(($xtiles-1))}); do

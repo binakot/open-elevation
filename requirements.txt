@@ -1,7 +1,6 @@
 flask
 flask_cors
-
 lazy
-
-gdal
+numpy
 rtree
+gdal==3.6.2

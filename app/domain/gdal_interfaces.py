@@ -1,13 +1,13 @@
 import json
 import os
-from lazy import lazy
 from os import listdir
 from os.path import isfile, join, getsize
+
+from lazy import lazy
 from osgeo import gdal, osr
 from rtree import index
 
 
-# Originally based on https://stackoverflow.com/questions/13439357/extract-point-from-raster-in-gdal
 class GDALInterface(object):
     SEA_LEVEL = 0
 
@@ -28,18 +28,15 @@ class GDALInterface(object):
         }
 
     def loadMetadata(self):
-        # open the raster and its spatial reference
         self.src = gdal.Open(self.tif_path)
 
         if self.src is None:
             raise Exception('Could not load GDAL file "%s"' % self.tif_path)
         spatial_reference_raster = osr.SpatialReference(self.src.GetProjection())
 
-        # get the WGS84 spatial reference
         spatial_reference = osr.SpatialReference()
-        spatial_reference.ImportFromEPSG(4326)  # WGS84
+        spatial_reference.ImportFromEPSG(4326)
 
-        # coordinate transformation
         self.coordinate_transform = osr.CoordinateTransformation(spatial_reference, spatial_reference_raster)
         gt = self.geo_transform = self.src.GetGeoTransform()
         dev = (gt[1] * gt[5] - gt[2] * gt[4])
@@ -56,18 +53,14 @@ class GDALInterface(object):
 
     def lookup(self, lat, lon):
         try:
-
-            # get coordinate of the raster
             xgeo, ygeo, zgeo = self.coordinate_transform.TransformPoint(lon, lat, 0)
 
-            # convert it to pixel/line on band
             u = xgeo - self.geo_transform_inv[0]
             v = ygeo - self.geo_transform_inv[3]
-            # FIXME this int() is probably bad idea, there should be half cell size thing needed
+
             xpix = int(self.geo_transform_inv[1] * u + self.geo_transform_inv[2] * v)
             ylin = int(self.geo_transform_inv[4] * u + self.geo_transform_inv[5] * v)
 
-            # look the value up
             v = self.points_array[ylin, xpix]
 
             return v if v != -32768 else self.SEA_LEVEL
@@ -137,12 +130,10 @@ class GDALTileInterface(object):
             all_coords += [
                 {
                     'file': full_path,
-                    'coords': (lmin,  # latitude min
-                               lmax,  # latitude max
-                               lngmin,  # longitude min
-                               lngmax,  # longitude max
-
-                               )
+                    'coords': (lmin,
+                               lmax,
+                               lngmin,
+                               lngmax)
                 }
             ]
             print('\tDone! LAT (%s,%s) | LNG (%s,%s)' % (lmin, lmax, lngmin, lngmax))
@@ -178,3 +169,13 @@ class GDALTileInterface(object):
             e['index_id'] = index_id
             left, bottom, right, top = (e['coords'][0], e['coords'][2], e['coords'][1], e['coords'][3])
             self.index.insert(index_id, (left, bottom, right, top), obj=e)
+
+
+interface = GDALTileInterface("data/", "data/summary.json", 8)
+
+if interface.has_summary_json():
+    print("Re-using existing summary JSON")
+    interface.read_summary_json()
+else:
+    print("Creating new summary JSON")
+    interface.create_summary_json()
