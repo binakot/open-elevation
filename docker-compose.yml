@@ -2,7 +2,7 @@ version: '3'
 
 services:
   open-elevation:
-    image: open-elevation
+    image: binakot/open-elevation
     container_name: open-elevation
     restart: unless-stopped
     ports:

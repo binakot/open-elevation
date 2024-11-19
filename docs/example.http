@@ -30,12 +30,12 @@ Accept: application/json
 Content-Type: application/json
 
 [
-  {
-    "latitude": 51.507351,
-    "longitude": -0.127696
-  },
-  {
-    "latitude": 48.856663,
-    "longitude": 2.351556
-  }
+  [
+    51.507351,
+    -0.127696
+  ],
+  [
+    48.856663,
+    2.351556
+  ]
 ]

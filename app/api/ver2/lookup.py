@@ -23,7 +23,7 @@ def lookup():
 
 def do_lookup(get_locations_func):
     locations = get_locations_func()
-    return {"results": [get_elevation(lat, lng) for (lat, lng) in locations]}
+    return [get_elevation(lat, lng) for (lat, lng) in locations]
 
 
 def query_to_locations():
@@ -53,7 +53,7 @@ def body_to_locations():
     latlng = []
     for l in locations:
         try:
-            latlng += [(l["latitude"], l["longitude"])]
+            latlng += [(l[0], l[1])]
         except KeyError:
             raise Exception("'%s' is not in a valid format" % l)
 
@@ -64,14 +64,6 @@ def get_elevation(lat, lng):
     try:
         elevation = interface.lookup(lat, lng)
     except:
-        return {
-            "latitude": lat,
-            "longitude": lng,
-            "error": "No such coordinate (%s, %s)" % (lat, lng)
-        }
+        return [lat, lng, None]
 
-    return {
-        "latitude": lat,
-        "longitude": lng,
-        "elevation": elevation
-    }
+    return [lat, lng, elevation]
