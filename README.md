@@ -7,7 +7,7 @@ to the [Google Elevation API](https://developers.google.com/maps/documentation/e
 
 ## Getting Started
 
-### Run without docker
+### Run without Docker
 
 ```bash
 # Build elevation dataset
@@ -24,18 +24,25 @@ $ python3 app/main.py
 $ curl -X GET "http://localhost:8080/api/v1/lookup?locations=51.507351,-0.127696|48.856663,2.351556"
 ```
 
-### Run via docker with image building
+### Run via Docker with image building
 
 ```bash
-$ docker build --progress=plain -t uwsgi-nginx-flask-docker-bookworm ./base-docker-image
-$ docker build --progress=plain -t open-elevation .
-$ docker run --name open-elevation -p 8080:8080 open-elevation
-$ docker exec -it open-elevation < TODO
+$ docker build -t uwsgi-nginx-flask-docker-bookworm:python-3.11 ./base-docker-image
+$ docker build -t open-elevation .
+$ docker run --rm -v $(pwd)/data:/data open-elevation bash -c 'cd / && ./scripts/create-dataset.sh'
+$ docker run --name open-elevation -v $(pwd)/data:/app/data -p 8080:8080 open-elevation
 ```
 
-### Run via docker with Docker Hub image
+### Run via Docker with Docker Hub image
 
 ```bash
-$ docker run --name open-elevation -p 8080:8080 binakot/open-elevation
-$ docker exec -it open-elevation bash < TODO
+$ docker run --rm -v $(pwd)/data:/data binakot/open-elevation bash -c 'cd / && ./scripts/create-dataset.sh'
+$ docker run --name open-elevation -v $(pwd)/data:/app/data -p 8080:8080 binakot/open-elevation
+```
+
+### Run via Docker Compose with Docker Hub image
+
+```bash
+$ docker run --rm -v $(pwd)/data:/data binakot/open-elevation bash -c 'cd / && ./scripts/create-dataset.sh'
+$ docker compose up -d
 ```

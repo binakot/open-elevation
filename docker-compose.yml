@@ -2,11 +2,10 @@ version: '3'
 
 services:
   open-elevation:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: open-elevation
+    container_name: open-elevation
     restart: unless-stopped
-    volumes:
-      - ./data:/app/data
     ports:
       - 8080:8080
+    volumes:
+      - ./data:/app/data

@@ -1,6 +1,11 @@
+setuptools
+wheel
+
 flask
 flask_cors
+
 lazy
+
+gdal==3.6.2
 numpy
 rtree
-gdal==3.6.2

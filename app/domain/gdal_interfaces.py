@@ -172,10 +172,4 @@ class GDALTileInterface(object):
 
 
 interface = GDALTileInterface("data/", "data/summary.json", 8)
-
-if interface.has_summary_json():
-    print("Re-using existing summary JSON")
-    interface.read_summary_json()
-else:
-    print("Creating new summary JSON")
-    interface.create_summary_json()
+interface.create_summary_json()
