@@ -46,3 +46,14 @@ $ docker run --name open-elevation -v $(pwd)/data:/app/data -p 8080:8080 binakot
 $ docker run --rm -v $(pwd)/data:/data binakot/open-elevation bash -c 'cd / && ./scripts/create-dataset.sh'
 $ docker compose up -d
 ```
+
+## Performance tests via WRK
+
+```bash
+$ ./wrk/perf-tests.sh
+```
+
+Config files in Docker container:
+- /etc/uwsgi/uwsgi.ini
+- /etc/nginx/nginx.conf
+- /etc/supervisor/conf.d/supervisord.conf

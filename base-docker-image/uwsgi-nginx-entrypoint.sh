@@ -17,13 +17,13 @@ USE_LISTEN_PORT=${LISTEN_PORT:-80}
 if [ -f /app/nginx.conf ]; then
     cp /app/nginx.conf /etc/nginx/nginx.conf
 else
-    content='user  nginx;\n'
-    # Set the number of worker processes in Nginx
+    content='user nginx;\n'
     content=$content"worker_processes ${USE_NGINX_WORKER_PROCESSES};\n"
-    content=$content'error_log  /var/log/nginx/error.log warn;\n'
-    content=$content'pid        /var/run/nginx.pid;\n'
+    content=$content'error_log /var/log/nginx/error.log crit;\n'
+    content=$content'pid       /var/run/nginx.pid;\n'
     content=$content'events {\n'
     content=$content"    worker_connections ${NGINX_WORKER_CONNECTIONS};\n"
+    content=$content"    use epoll;\n"
     content=$content'}\n'
     content=$content'http {\n'
     content=$content'    include       /etc/nginx/mime.types;\n'
@@ -31,9 +31,15 @@ else
     content=$content'    log_format  main  '"'\$remote_addr - \$remote_user [\$time_local] \"\$request\" '\n"
     content=$content'                      '"'\$status \$body_bytes_sent \"\$http_referer\" '\n"
     content=$content'                      '"'\"\$http_user_agent\" \"\$http_x_forwarded_for\"';\n"
-    content=$content'    access_log  /var/log/nginx/access.log  main;\n'
-    content=$content'    sendfile        on;\n'
-    content=$content'    keepalive_timeout  65;\n'
+    content=$content'    access_log off;\n'
+    content=$content'    sendfile on;\n'
+    content=$content'    tcp_nopush on;\n'
+    content=$content'    tcp_nodelay on;\n'
+    content=$content'    keepalive_timeout 15;\n'
+    content=$content'    gzip on;\n'
+    content=$content'    gzip_comp_level 1;\n'
+    content=$content'    gzip_min_length 1024;\n'
+    content=$content'    gzip_types text/plain text/xml application/xml application/json;\n'
     content=$content'    include /etc/nginx/conf.d/*.conf;\n'
     content=$content'}\n'
     content=$content'daemon off;\n'
